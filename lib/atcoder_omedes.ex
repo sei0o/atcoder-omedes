@@ -9,19 +9,23 @@ defmodule AtCoderOmedes do
     # Fetch users whose highest rating and color changed
     new_highest_users = cur_users
       |> Enum.map(fn {name, cur} ->
-          %{^name => %{highest: prev_highest, rating: _}} = prev_users
-          cond do
-            prev_highest < cur.highest and color(prev_highest) != color(cur.highest) -> [name, color(cur.highest)]
-            true -> nil
+          case prev_users do
+            %{^name => %{highest: prev_highest, rating: _}} ->
+              cond do
+                prev_highest < cur.highest and color(prev_highest) != color(cur.highest) -> [name, color(cur.highest)]
+                true -> nil
+              end
+            _ -> nil
           end
         end)
       |> Enum.filter(& &1)
       |> Map.new(fn [k, v] -> {k, v} end)
 
-    update cur_users
+    #update cur_users
     IO.puts stringify new_highest_users
   end
 
+  def update, do: update get_users()
   def update(users) do
     f = File.open! @path, [:write, :utf8]
     users
