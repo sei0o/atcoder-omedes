@@ -22,7 +22,7 @@ defmodule AtCoderOmedes do
       |> Map.new(fn [k, v] -> {k, v} end)
 
     #update cur_users
-    IO.puts stringify new_highest_users
+    File.write "output.html", beautify(new_highest_users)
   end
 
   def update, do: update get_users()
@@ -92,7 +92,7 @@ defmodule AtCoderOmedes do
     end
   end
 
-  def stringify(users) do
+  def beautify(users) do
     color_str = [:red, :orange, :yellow, :blue, :cyan, :green]
     |> Enum.map(fn c ->
         case users |> Map.values |> Enum.count(& &1 == c) do
@@ -103,10 +103,26 @@ defmodule AtCoderOmedes do
     |> Enum.filter(& &1)
     |> Enum.join(", ")
 
+    beautified_users = users
+    |> Enum.sort(&(&1 >= &2))
+    |> Enum.map(fn {name, color} -> "<span class='#{Atom.to_string color}'>#{name}</span>" end)
+    |> Enum.join(", ")
+
     """
-    AGC999 has ended!
-    There are new #{color_str} coders!
-    Kudos to #{users |> Map.keys |> Enum.join(", ")} 🎉🎉🎉
+    <style>
+      /* color picking: http://hsluv.org/ by Alexei Boronine */
+      .red { color: #eee002b; }
+      .orange { color: #d34722; }
+      .yellow { color: #a78f19; }
+      .blue { color: #004696; }
+      .cyan { color: #0088b8; }
+      .green { color: #009400; }
+      .brown { color: #844800; }
+      .gray { color: #3d413f; }
+    </style>
+    AGC999 has ended!<br>
+    <strong>There are new #{color_str} coders!</strong><br>
+    Kudos to #{beautified_users} 🎉🎉🎉
     """
   end
 end
