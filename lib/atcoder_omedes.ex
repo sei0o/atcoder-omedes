@@ -32,6 +32,14 @@ defmodule AtCoderOmedes do
     |> Enum.map(fn {name, info} -> [name, info.rating, info.highest] end)
     |> CSV.encode
     |> Enum.each(&IO.write(f, &1))
+
+    encoded = users
+    |> Enum.group_by(fn {_, info} -> color(info.rating) end)
+    |> Enum.map(fn {color, list} -> {color, length(list)} end)
+    |> (&([&1[:red], &1[:orange], &1[:yellow], &1[:blue], &1[:cyan], &1[:green], &1[:brown], &1[:gray]])).()
+    |> IO.inspect
+    |> Enum.join(",")
+    File.write "color_data.csv", encoded, [:append]
   end
 
   def load do
